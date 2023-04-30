@@ -1,0 +1,24 @@
+tasks:
+  - init: |
+      # install platys
+      sudo curl -L "https://github.com/TrivadisPF/platys/releases/download/2.4.3/platys_2.4.3_linux_x86_64.tar.gz" -o /tmp/platys.tar.gz
+      cd /tmp
+      tar zvxf /tmp/platys.tar.gz 
+      sudo mv platys /usr/local/bin/
+      sudo chown root:root /usr/local/bin/platys
+      sudo rm /tmp/platys.tar.gz 
+  - command: |
+      gp open README.md
+      export PUBLIC_IP=127.0.0.1
+      platys version      
+
+ports:
+
+  # AKHQ
+  - port: 28042
+    onOpen: open-preview
+    visibility: public
+
+vscode:
+  extensions:
+    - ms-azuretools.vscode-docker    
