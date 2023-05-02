@@ -87,6 +87,37 @@ export DOCKER_HOST_IP=127.0.0.1
 ```
 (I am not entirely sure about the PUBLIC_IP)
 
+I have added in docker-compose.yml:
+
+Healthcheck for `postgresql`
+```
+    environment:
+      - POSTGRES_PASSWORD=abc123!
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+      - POSTGRES_MULTIPLE_DATABASES=demodb
+      - POSTGRES_MULTIPLE_USERS=demo
+      - POSTGRES_MULTIPLE_PASSWORDS=abc123!
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - DB_SCHEMA=demo
+    healthcheck: 
+      interval: 10s
+      retries: 10
+      test: "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""
+      timeout: 2s
+```      
+
+and dependency for nocodb:
+
+```
+  nocodb:
+    depends_on: 
+      postgresql:
+        condition: service_healthy
+    image: nocodb/nocodb:latest
+```
+
+
 To now run the Docker Compose:
 
 ```
@@ -103,7 +134,12 @@ In my case:
       - 28276:8080
 ``` 
 
-On port 28276 I can open the `nocodb` web ui. After creating an account, I can enter the tool - that is connected to the PostgreSQL Database. I can define new tables, enter data and create a view on that data. I can even share that view (a web page) with anyone on the public internet.
+On port 28276 I can open the `nocodb` web ui. After creating an account, I can enter the tool. Under `Team & Settings` I can create a new data source that connects to the demo user and the demodb database and the demo schema. Subsequently I can add tables in the project under this data source - and "pick up" tables that already exist in the database.
+
+![](images/data-source-postgresql.png)
+
+
+I can define new tables, enter data and create a view on that data. I can even share that view (a web page) with anyone on the public internet.
 
 One way to look inside the PostgreSQL database is with the CLI *pgcli*. You can install it with:
 
@@ -116,6 +152,14 @@ and the run and connect to the *demo* user in the *demodb* with:
 ```
 pgcli 'postgres://demo:abc123!@localhost:5432/demodb'
 ```
+
+List tables:
+
+```
+\dt
+```
+
+Create a table through DDL in this CLI and the table becomes available for NocoDB to use in the application. Tables can be created from either end (NocoDB UI and directly in the database) and the same applies to data.
 
 # Cookbook with Trino and Kafka
 
