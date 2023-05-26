@@ -6,10 +6,12 @@ cd platys-demo-platform
 
 
 ```
-platys init --enable-services SUPERSET,TRINO,KAFKA,SCHEMA_REGISTRY,KAFKA_AKHQ,KAFKACAT,PROVISIONING_DATA -s trivadis/platys-modern-data-platform -w 1.13.0
+platys init --enable-services TRINO,KAFKA,SCHEMA_REGISTRY,KAFKA_AKHQ,KAFKACAT,PROVISIONING_DATA -s trivadis/platys-modern-data-platform -w 1.13.0
 ```
 
 Running this command takes several dozens of seconds. It generates a config.yml file, if it does not exist already, with all the services which can be configured for the platform. This config file is now to be configured - to specify the services to be included in the *demo-platform*. For example: enable Apache Kafka, MySQL, SuperSet, RabbitMQ. And set additional configuration settings - see [the documentation of the configuration settings](https://github.com/TrivadisPF/platys-modern-data-platform/blob/master/documentation/configuration.md)
+
+Note: I had included Superset but it resulted in an error: *Error response from daemon: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: error during container init: error mounting "sysfs" to rootfs at "/sys": mount sysfs:/sys (via /proc/self/fd/6), flags: 0xf: operation not permitted: unknown*
 
 Open the `config.yml` file.
 
@@ -39,14 +41,85 @@ Before running Docker Compose, first export
 ```
 export DOCKER_HOST_IP=127.0.0.1
 ```
+And remove wetty from docker-compose , to prevent this error:
+*Error response from daemon: pull access denied for svenihoney/wetty, repository does not exist or may require 'docker login': denied: requested access to the resource is denied*
 
 To now run the Docker Compose:
 
 ```
 docker-compose up -d
 ```
-Remove wetty from docker-compose , to prevent this error:
-*Error response from daemon: pull access denied for svenihoney/wetty, repository does not exist or may require 'docker login': denied: requested access to the resource is denied*
+
+Create a file tpch.customer.json in the folder conf/trino/kafka with the following content - that describes for Trino the structure of the messages on the Customer topic:
+```
+{
+    "tableName": "customer",
+    "schemaName": "tpch",
+    "topicName": "tpch.customer",
+    "key": {
+        "dataFormat": "raw",
+        "fields": [
+            {
+                "name": "kafka_key",
+                "dataFormat": "LONG",
+                "type": "BIGINT",
+                "hidden": "false"
+            }
+        ]
+    },
+    "message": {
+        "dataFormat": "json",
+        "fields": [
+            {
+                "name": "row_number",
+                "mapping": "rowNumber",
+                "type": "BIGINT"
+            },
+            {
+                "name": "customer_key",
+                "mapping": "customerKey",
+                "type": "BIGINT"
+            },
+            {
+                "name": "name",
+                "mapping": "name",
+                "type": "VARCHAR"
+            },
+            {
+                "name": "address",
+                "mapping": "address",
+                "type": "VARCHAR"
+            },
+            {
+                "name": "nation_key",
+                "mapping": "nationKey",
+                "type": "BIGINT"
+            },
+            {
+                "name": "phone",
+                "mapping": "phone",
+                "type": "VARCHAR"
+            },
+            {
+                "name": "account_balance",
+                "mapping": "accountBalance",
+                "type": "DOUBLE"
+            },
+            {
+                "name": "market_segment",
+                "mapping": "marketSegment",
+                "type": "VARCHAR"
+            },
+            {
+                "name": "comment",
+                "mapping": "comment",
+                "type": "VARCHAR"
+            }
+        ]
+    }
+}
+```
+
 
 this next section is copied from https://github.com/TrivadisPF/platys-modern-data-platform/blob/master/cookbooks/recipes/querying-kafka-with-trino/README.md
 
