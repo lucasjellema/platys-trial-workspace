@@ -6,7 +6,7 @@ cd platys-demo-platform
 
 
 ```
-platys init --enable-services TRINO,KAFKA,SCHEMA_REGISTRY,KAFKA_AKHQ,KAFKACAT,PROVISIONING_DATA -s trivadis/platys-modern-data-platform -w 1.13.0
+platys init --enable-services TRINO,KAFKA,SCHEMA_REGISTRY,KAFKA_AKHQ,KAFKACAT,PROVISIONING_DATA -s trivadis/platys-modern-data-platform -w 1.16.0
 ```
 
 Running this command takes several dozens of seconds. It generates a config.yml file, if it does not exist already, with all the services which can be configured for the platform. This config file is now to be configured - to specify the services to be included in the *demo-platform*. For example: enable Apache Kafka, MySQL, SuperSet, RabbitMQ. And set additional configuration settings - see [the documentation of the configuration settings](https://github.com/TrivadisPF/platys-modern-data-platform/blob/master/documentation/configuration.md)

@@ -42,7 +42,7 @@ Now let's use platys to initialise the new and now current directory to use the 
 We specify the platform stack name trivadis/platys-modern-data-platform to use as well as the stack version 1.15.0 (the current version of this platform stack at the time of writing).  With the -n option we give the platform a meaningful name. It will be used as the name of the docker network, so it is important that it is unique, if you use multiple platforms on the same machine.
 
 ```
-platys init -n demo-platform --stack trivadis/platys-modern-data-platform --stack-version 1.15.0 --structure flat
+platys init -n demo-platform --stack trivadis/platys-modern-data-platform --stack-version 1.16.0 --structure flat
 ```
 
 Running this command takes several dozens of seconds. It generates a config.yml file, if it does not exist already, with all the services which can be configured for the platform. This config file is now to be configured - to specify the services to be included in the *demo-platform*. For example: enable Apache Kafka, MySQL, SuperSet, RabbitMQ. And set additional configuration settings - see [the documentation of the configuration settings](https://github.com/TrivadisPF/platys-modern-data-platform/blob/master/documentation/configuration.md)
